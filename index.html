@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Infantil</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f9fbe7;
+            margin: 0;
+        }
+        .calculator {
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 320px;
+            text-align: center;
+            border: 4px solid #ff6f00;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 24px;
+            border: 2px solid #ff6f00;
+            border-radius: 10px;
+            background-color: #fffde7;
+            color: #333;
+        }
+        button {
+            background-color: #ff6f00;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 70px;
+            height: 70px;
+        }
+        button:hover {
+            background-color: #e65100;
+        }
+        button.operation {
+            background-color: #43a047;
+        }
+        button.operation:hover {
+            background-color: #388e3c;
+        }
+        button.clear {
+            background-color: #e53935;
+        }
+        button.clear:hover {
+            background-color: #c62828;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-size: 18px;
+            color: #ff6f00;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Calculadora</h1>
+        <input type="text" id="display" disabled>
+        <label for="num1">Número 1:</label>
+        <input type="text" id="num1">
+        <label for="num2">Número 2:</label>
+        <input type="text" id="num2">
+        <div class="buttons">
+            <button class="operation" onclick="setOperation('+')">+</button>
+            <button class="operation" onclick="setOperation('-')">-</button>
+            <button class="operation" onclick="setOperation('*')">*</button>
+            <button class="operation" onclick="setOperation('/')">/</button>
+            
+            <button onclick="calculate()">Calcular</button>
+            <button class="clear" onclick="clearDisplay()">Limpiar</button>
+        </div>
+    </div>
+    <script>
+        const calculator = {
+            display: document.getElementById('display'),
+            num1Input: document.getElementById('num1'),
+            num2Input: document.getElementById('num2'),
+            operation: null,
+
+            setOperation(op) {
+                this.operation = op;
+                this.saveState(); // Save state when operation is set
+            },
+
+            calculate() {
+                const num1 = parseFloat(this.num1Input.value);
+                const num2 = parseFloat(this.num2Input.value);
+                let result;
+
+                if (this.operation) {
+                    switch (this.operation) {
+                        case '+':
+                            result = num1 + num2;
+                            break;
+                        case '-':
+                            result = num1 - num2;
+                            break;
+                        case '*':
+                            result = num1 * num2;
+                            break;
+                        case '/':
+                            result = num1 / num2;
+                            break;
+                        default:
+                            result = 'Operación no válida';
+                            break;
+                    }
+                    this.display.value = result;
+                    this.saveState(); // Save state after calculation
+                }
+            },
+
+            clearDisplay() {
+                this.num1Input.value = '';
+                this.num2Input.value = '';
+                this.display.value = '';
+                this.operation = null;
+                this.saveState(); // Save state when clearing display
+            },
+
+            saveState() {
+                const state = {
+                    num1: this.num1Input.value,
+                    num2: this.num2Input.value,
+                    operation: this.operation,
+                    result: this.display.value
+                };
+                localStorage.setItem('calculatorState', JSON.stringify(state));
+            },
+
+            loadState() {
+                const state = JSON.parse(localStorage.getItem('calculatorState'));
+                if (state) {
+                    this.num1Input.value = state.num1;
+                    this.num2Input.value = state.num2;
+                    this.operation = state.operation;
+                    this.display.value = state.result;
+                }
+            }
+        };
+
+        function setOperation(op) {
+            calculator.setOperation(op);
+        }
+
+        function calculate() {
+            calculator.calculate();
+        }
+
+        function clearDisplay() {
+            calculator.clearDisplay();
+        }
+
+        // Load saved state when page is loaded
+        window.onload = function() {
+            calculator.loadState();
+        };
+    </script>
+</body>
+</html>
